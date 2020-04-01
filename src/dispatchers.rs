@@ -34,7 +34,7 @@
 /// which allows to dispatch two-variants enums.
 ///
 /// ```
-/// use resep::create_n_collect_dispatcher;
+/// use edisp::create_n_collect_dispatcher;
 ///
 /// create_n_collect_dispatcher!(CollectDispatchTest, (A, B), (C, D));
 /// ```

@@ -1,5 +1,5 @@
 [package]
-name = "resep"
+name = "edisp"
 version = "0.1.0"
 authors = ["Leo Pourcelot <leo.pourcelot@protonmail.com>"]
 edition = "2018"

@@ -1,47 +1,101 @@
 //! Allows to separate values in iterator by variant (especially for results)
 //!
-//! # Description
+//! # Edisp
 //!
-//! This crate explores a new way to `collect` values from an `Iterator` by
-//! dispatching it based on the variant used. It allows to quickly collect
-//! different variants of the same enum into different collections. The most
-//! obvious use case is to filter success and errors in iterator of results,
-//! and collect each errors and each success in separate collections whereas,
-//! with `collect` from `std`, the collecting process stops when the first
-//! error is encountered.
+//! Dispatch-on-collect for Rust enums. This crate allows to dispatch enums
+//! yielded from an iterator, depending on their variants, with no runtime
+//! costs.
 //!
-//! # Example
+//! # Details
 //!
-//! This example shows how to implement the dispatching for a user-defined
-//! enum.
+//! ## On `std` enums
+//!
+//! **Note:** This paragraph describes what *should* be done, not the current
+//! state of the crate. As of today, dispatching is implemented for `Result`.
+//!
+//! This crate provides dispatching for enums defined in `std`. Values can be
+//! collected in any type that implement `Container` (see below). This
+//! dispatching consists in a trait generated for each enum, which can be
+//! called on every `Iterator`, like so:
 //!
 //! ```
-//! use resep::prelude::*;
+//! use edisp::prelude::*;
 //!
-//! enum CustomEnum<T> {
-//!     Integer(u8),
-//!     Custom(T),
-//!     Char(char),
-//! }
-//!
-//! // Implements required traits using a macro. Neat!
-//! implement_dispatch!(CustomEnum<T>, Integer(u8), Custom(T), Char(char));
-//!
-//! // A practical use case.
-//! let an_iterator = vec![
-//!     CustomEnum::Custom("doggo"),
-//!     CustomEnum::Integer(42),
-//!     CustomEnum::Char('z'),
-//!     CustomEnum::Char('w'),
-//!     CustomEnum::Custom("horse"),
+//! // Use your regular iterator
+//! let iter = vec![
+//!     Ok(42),
+//!     Ok(0),
+//!     Err("User not found"),
+//!     Err("System error"),
 //! ].into_iter();
 //!
-//! let (some_integers, some_strs, some_chars): (Vec<_>, Vec<_>, Vec<_>) = CustomEnum::dispatch(an_iterator);
+//! // Call the correct method, and that's all!
+//! let (some_success, some_errors): (Vec<_>, Vec<_>) = iter.dispatch_result();
 //!
-//! assert_eq!(some_integers, vec![42]);
-//! assert_eq!(some_strs, vec!["doggo", "horse"]);
-//! assert_eq!(some_chars, vec!['z', 'w']);
+//! assert_eq!(some_success, vec![42, 0]);
+//! assert_eq!(some_errors, vec!["User not found", "System error"]);
 //! ```
+//!
+//! ## On other crate's enums
+//!
+//! This crate provides traits entitled `CollectDispatch2`, `CollectDispatch3`,
+//! and so on. These traits are implemented on-demand with a specific macro.
+//! Values can be collected in any type that implement `Container` (see below).
+//!
+//! Everything wraps up like this:
+//!
+//! ```
+//! use edisp::prelude::*;
+//!
+//! enum MyOwnEnum<T> {
+//!     Character(char),
+//!     Custom(T),
+//! }
+//!
+//! // Implements the required trait (in this case, CollectDispatch2)
+//! implement_dispatch!(
+//!     MyOwnEnum<T>,
+//!     Character(char),
+//!     Custom(T),
+//! );
+//!
+//! // Practical use-case:
+//! // First, create an iterator of `MyOwnEnum<&'static str>`
+//! let iter = vec![
+//!     MyOwnEnum::Character('λ'),
+//!     MyOwnEnum::Custom("horse"),
+//!     MyOwnEnum::Custom("manatee"),
+//!     MyOwnEnum::Character('!'),
+//! ].into_iter();
+//!
+//! // Then call it
+//! let (some_characters, some_strs): (Vec<_>, Vec<_>) = MyOwnEnum::dispatch(iter);
+//!
+//! // And it does what you expect!
+//! assert_eq!(
+//!     some_characters,
+//!     vec!['λ', '!'],
+//! );
+//!
+//! assert_eq!(
+//!     some_strs,
+//!     vec!["horse", "manatee"],
+//! );
+//! ```
+//!
+//! ## The `Container` trait
+//!
+//! Values contained in enum variants are collected on objects which implement a
+//! `Container` trait. This trait is fairly simple, and *may be* implemented by
+//! every collection in the standard library. Additionaly, this trait is made
+//! public so that other rustaceans can implement it for their own collections.
+//!
+//! So far, this traits consists of two methods:
+//!   - creating a new `container`,
+//!   - adding an element to it.
+//!
+//! There can however be some specific requirements. For instance, `HashMap`
+//! may implement `Collect`, but only for `(K, V)` tuples.
 
 #![forbid(missing_docs)]
 
@@ -100,7 +154,7 @@ macro_rules! implement_dispatcher_trait {
 /// Implements the dispatch for an enum.
 ///
 /// ```
-/// use resep::prelude::*;
+/// use edisp::prelude::*;
 ///
 /// enum MyResult<T, E> {
 ///     MyOk(T),
@@ -262,14 +316,13 @@ implement_dispatch!(Result<T, E>, Ok(T), Err(E));
 /// and `Err` variants to two different containers.
 pub trait CollectResult<A, B> {
     /// Collects values and dispatch them.
-    fn collect_result<C: Container<A>, D: Container<B>>(self) -> (C, D);
+    fn dispatch_result<C: Container<A>, D: Container<B>>(self) -> (C, D);
 }
 
 impl<T, E, I: Iterator<Item = Result<T, E>>> CollectResult<T, E> for I {
-    fn collect_result<C: Container<T>, D: Container<E>>(self) -> (C, D) {
+    fn dispatch_result<C: Container<T>, D: Container<E>>(self) -> (C, D) {
         use crate::prelude::*;
 
         Result::dispatch(self)
     }
 }
-
