@@ -15,7 +15,7 @@ collected in any type that implement `Container` (see below). This dispatching
 consists in a trait generated for each enum, which can be called on every
 `Iterator`, like so:
 
-```
+```rust
 use edisp::prelude::*;
 
 // Use your regular iterator
@@ -41,7 +41,7 @@ be collected in any type that implement `Container` (see below).
 
 Everything wraps up like this:
 
-```
+```rust
 use edisp::prelude::*;
 
 enum MyOwnEnum<T> {
