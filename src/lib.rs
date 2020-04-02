@@ -113,14 +113,14 @@ use container::Container;
 #[macro_export]
 macro_rules! implement_dispatcher_trait {
     (
-        $enum_name:ident< $( $ty_arg:ident, )* >,
+        $enum_name:ident ( $( $ty_arg:tt ),* $( , )? ),
         $trait_name:ident,
         $( (
             $variant_name:ident,
             $inner_type:ty,
             $container_name:ident,
             $container_letter:ident
-        ), )+
+        ) ),+ $( , )?
     ) => {
         impl< $( $ty_arg, )* > $crate::dispatchers::$trait_name< $( $inner_type, )+ > for $enum_name< $( $ty_arg, )* > {
             fn dispatch< $( $container_letter, )* I>(iter:I) -> ( $( $container_letter, )+ )
@@ -172,36 +172,36 @@ macro_rules! implement_dispatcher_trait {
 /// ```
 #[macro_export]
 macro_rules! implement_dispatch {
-    ($_:ident $( $( $__:ident ),+ > )? $( , )? ) => {
+    ($_:ident $( < $( $__:tt ),+ $( , )? > )? $( , )? ) => {
         compile_error!("It is not necessary to implement `Dispatch` on an empty enum.");
     };
 
-    ($_:ident $( < $($__:ident),+> )?,
+    ($_:ident $( < $( $__:tt),+ $( , )? > )?,
      $___: ident ($____: ty) $( , )?
     ) => {
         compile_error!("It is not necessary to implement `Dispatch` on a single-variant enum. You can use `map` and then collect instead.");
     };
 
 
-    ($enum_name:ident $( < $($ty_arg:ident),+> )?,
+    ($enum_name:ident $( < $( $ty_arg:tt ),+ $( , )? > )?,
      $variant1_name: ident ($variant1_it: ty),
      $variant2_name: ident ($variant2_it: ty) $( , )?
     ) => {
         implement_dispatcher_trait!(
-            $enum_name< $( $( $ty_arg, )+ )?>,
+            $enum_name( $( $( $ty_arg, )+ )? ),
             CollectDispatch2,
             ($variant1_name, $variant1_it, container_a, A),
             ($variant2_name, $variant2_it, container_b, B),
         );
     };
 
-    ($enum_name:ident $( < $($ty_arg:ident),+> )?,
+    ($enum_name:ident $( < $( $ty_arg:tt ),+ $( , )? > )?,
      $variant1_name: ident ($variant1_it: ty),
      $variant2_name: ident ($variant2_it: ty),
      $variant3_name: ident ($variant3_it: ty) $( , )?
     ) => {
         implement_dispatcher_trait!(
-            $enum_name< $( $( $ty_arg, )+ )?>,
+            $enum_name( $( $( $ty_arg, )+ )? ),
             CollectDispatch3,
             ($variant1_name, $variant1_it, container_1, A),
             ($variant2_name, $variant2_it, container_2, B),
@@ -209,14 +209,14 @@ macro_rules! implement_dispatch {
         );
     };
 
-    ($enum_name:ident $( < $($ty_arg:ident),+> )?,
+    ($enum_name:ident $( < $( $ty_arg:tt ),+ $( , )? > )?,
      $variant1_name: ident ($variant1_it: ty),
      $variant2_name: ident ($variant2_it: ty),
      $variant3_name: ident ($variant3_it: ty),
      $variant4_name: ident ($variant4_it: ty) $( , )?
     ) => {
         implement_dispatcher_trait!(
-            $enum_name< $( $( $ty_arg, )+ )?>,
+            $enum_name( $( $( $ty_arg, )+ )? ),
             CollectDispatch4,
             ($variant1_name, $variant1_it, container_1, A),
             ($variant2_name, $variant2_it, container_2, B),
@@ -225,7 +225,7 @@ macro_rules! implement_dispatch {
         );
     };
 
-    ($enum_name:ident $( < $($ty_arg:ident),+> )?,
+    ($enum_name:ident $( < $( $ty_arg:tt ),+ $( , )? > )?,
      $variant1_name: ident ($variant1_it: ty),
      $variant2_name: ident ($variant2_it: ty),
      $variant3_name: ident ($variant3_it: ty),
@@ -233,7 +233,7 @@ macro_rules! implement_dispatch {
      $variant5_name: ident ($variant5_it: ty) $( , )?
     ) => {
         implement_dispatcher_trait!(
-            $enum_name< $( $( $ty_arg, )+ )?>,
+            $enum_name( $( $( $ty_arg, )+ )? ),
             CollectDispatch5,
             ($variant1_name, $variant1_it, container_1, A),
             ($variant2_name, $variant2_it, container_2, B),
@@ -243,7 +243,7 @@ macro_rules! implement_dispatch {
         );
     };
 
-    ($enum_name:ident $( < $($ty_arg:ident),+> )?,
+    ($enum_name:ident $( < $( $ty_arg:tt ),+ $( , )? > )?,
      $variant1_name: ident ($variant1_it: ty),
      $variant2_name: ident ($variant2_it: ty),
      $variant3_name: ident ($variant3_it: ty),
@@ -252,7 +252,7 @@ macro_rules! implement_dispatch {
      $variant6_name: ident ($variant6_it: ty) $( , )?
     ) => {
         implement_dispatcher_trait!(
-            $enum_name< $( $( $ty_arg, )+ )?>,
+            $enum_name( $( $( $ty_arg, )+ )? ),
             CollectDispatch6,
             ($variant1_name, $variant1_it, container_1, A),
             ($variant2_name, $variant2_it, container_2, B),
@@ -263,7 +263,7 @@ macro_rules! implement_dispatch {
         );
     };
 
-    ($enum_name:ident $( < $($ty_arg:ident),+> )?,
+    ($enum_name:ident $( < $( $ty_arg:tt ),+ $( , )? > )?,
      $variant1_name: ident ($variant1_it: ty),
      $variant2_name: ident ($variant2_it: ty),
      $variant3_name: ident ($variant3_it: ty),
@@ -273,7 +273,7 @@ macro_rules! implement_dispatch {
      $variant7_name: ident ($variant7_it: ty) $( , )?
     ) => {
         implement_dispatcher_trait!(
-            $enum_name< $( $( $ty_arg, )+ )?>,
+            $enum_name( $( $( $ty_arg, )+ )? ),
             CollectDispatch7,
             ($variant1_name, $variant1_it, container_1, A),
             ($variant2_name, $variant2_it, container_2, B),
@@ -285,7 +285,7 @@ macro_rules! implement_dispatch {
         );
     };
 
-    ($enum_name:ident $( < $($ty_arg:ident),+> )?,
+    ($enum_name:ident $( < $( $ty_arg:tt ),+ $( , )? > )?,
      $variant1_name: ident ($variant1_it: ty),
      $variant2_name: ident ($variant2_it: ty),
      $variant3_name: ident ($variant3_it: ty),
@@ -296,7 +296,7 @@ macro_rules! implement_dispatch {
      $variant8_name: ident ($variant8_it: ty) $( , )?
     ) => {
         implement_dispatcher_trait!(
-            $enum_name< $( $( $ty_arg, )+ )?>,
+            $enum_name( $( $( $ty_arg, )+ )? ),
             CollectDispatch8,
             ($variant1_name, $variant1_it, container_1, A),
             ($variant2_name, $variant2_it, container_2, B),
@@ -324,5 +324,112 @@ impl<T, E, I: Iterator<Item = Result<T, E>>> CollectResult<T, E> for I {
         use crate::prelude::*;
 
         Result::dispatch(self)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    macro_rules! implement_and_test_dispatching {
+        (
+            $test_name:ident,
+            [ $( $input_value:expr ),* $( , )? ],
+            $( ($v_name:ident ($v_type:ty), $c_name:ident, $collect_type:ty, $c_content:tt $( , )? ) ),* $( , )? 
+        ) => {
+            #[test]
+            fn $test_name() {
+                use crate::prelude::*;
+
+                enum Enum {
+                    $( $v_name($v_type) ),*
+                }
+
+                use Enum::*;
+
+                implement_dispatch!(
+                    Enum,
+                    $( $v_name($v_type) ),*
+                );
+
+                let iter = vec![ $( $input_value ),* ].into_iter();
+
+                let ( $( $c_name ),* ): ( $( $collect_type ),* ) = Enum::dispatch(iter);
+
+                $(
+                    assert_eq!($c_name, $c_content);
+                )*
+            }
+        };
+    }
+
+    implement_and_test_dispatching! {
+        dispatch_enum2,
+        [V1(42), V2("manatee")],
+        (V1(usize), c1, Vec<_>, [42]),
+        (V2(&'static str), c2, Vec<_>, ["manatee"]),
+    }
+
+    implement_and_test_dispatching! {
+        dispatch_enum3,
+        [V1(42), V2("manatee"), V3('!')],
+        (V1(usize), c1, Vec<_>, [42]),
+        (V2(&'static str), c2, Vec<_>, ["manatee"]),
+        (V3(char), c3, Vec<_>, ['!']),
+    }
+
+    implement_and_test_dispatching! {
+        dispatch_enum4,
+        [V1(42), V2("manatee"), V3('!'), V4(true)],
+        (V1(usize), c1, Vec<_>, [42]),
+        (V2(&'static str), c2, Vec<_>, ["manatee"]),
+        (V3(char), c3, Vec<_>, ['!']),
+        (V4(bool), c4, Vec<_>, [true]),
+    }
+
+    implement_and_test_dispatching! {
+        dispatch_enum5,
+        [V1(42), V2("manatee"), V3('!'), V4(true), V5(1.618)],
+        (V1(usize), c1, Vec<_>, [42]),
+        (V2(&'static str), c2, Vec<_>, ["manatee"]),
+        (V3(char), c3, Vec<_>, ['!']),
+        (V4(bool), c4, Vec<_>, [true]),
+        (V5(f64), c5, Vec<_>, [1.618]),
+    }
+
+    implement_and_test_dispatching! {
+        dispatch_enum6,
+        [V1(42), V2("manatee"), V3('!'), V4(true), V5(1.618), V6(-1)],
+        (V1(usize), c1, Vec<_>, [42]),
+        (V2(&'static str), c2, Vec<_>, ["manatee"]),
+        (V3(char), c3, Vec<_>, ['!']),
+        (V4(bool), c4, Vec<_>, [true]),
+        (V5(f64), c5, Vec<_>, [1.618]),
+        (V6(isize), c6, Vec<_>, [-1]),
+    }
+
+    implement_and_test_dispatching! {
+        dispatch_enum7,
+        [V1(42), V2("manatee"), V3('!'), V4(true), V5(1.618), V6(-1), V7(101)],
+        (V1(usize), c1, Vec<_>, [42]),
+        (V2(&'static str), c2, Vec<_>, ["manatee"]),
+        (V3(char), c3, Vec<_>, ['!']),
+        (V4(bool), c4, Vec<_>, [true]),
+        (V5(f64), c5, Vec<_>, [1.618]),
+        (V6(isize), c6, Vec<_>, [-1]),
+        (V7(u8), c7, Vec<_>, [101]),
+    }
+
+    implement_and_test_dispatching! {
+        dispatch_enum8,
+        [V1(42), V2("manatee"), V3('!'), V4(true), V5(1.618), V6(-1), V7(101), V8('§')],
+        (V1(usize), c1, Vec<_>, [42]),
+        (V2(&'static str), c2, Vec<_>, ["manatee"]),
+        (V3(char), c3, Vec<_>, ['!']),
+        (V4(bool), c4, Vec<_>, [true]),
+        (V5(f64), c5, Vec<_>, [1.618]),
+        (V6(isize), c6, Vec<_>, [-1]),
+        (V7(u8), c7, Vec<_>, [101]),
+        (V8(char), c8, Vec<_>, ['§']),
     }
 }
