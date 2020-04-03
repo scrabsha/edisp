@@ -44,8 +44,13 @@ impl<T> Container<T> for Vec<T> {
 mod tests {
     use super::*;
 
-    #[test]
-    fn tests_are_missing() {
-        todo!();
+    fn container_for_vec() {
+        let left: Vec<()> = Vec::create_new();
+        let right = Vec::new();
+        assert_eq!(left, right);
+
+        let mut left = Vec::new();
+        left.add_element(42);
+        assert_eq!(left, vec![42]);
     }
 }
