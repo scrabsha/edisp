@@ -27,9 +27,9 @@ let iter = vec![
 ].into_iter();
 
 // Call the correct method, and that's all!
-let (some_success, some_errors): (Vec<_>, Vec<_>) = iter.dispatch_result();
+let (some_successes, some_errors): (Vec<_>, Vec<_>) = iter.dispatch_result();
 
-assert_eq!(some_success, vec![42, 0]);
+assert_eq!(some_successes, vec![42, 0]);
 assert_eq!(some_errors, vec!["User not found", "System error"]);
 ```
 
