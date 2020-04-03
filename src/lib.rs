@@ -128,7 +128,7 @@ macro_rules! implement_dispatcher_trait {
                       I: Iterator<Item = $enum_name< $( $ty_arg, )* >>
             {
                 $(
-                    let mut $container_name = $container_letter::new();
+                    let mut $container_name = $container_letter::create_new();
                 )+
 
                 use $enum_name::*;
