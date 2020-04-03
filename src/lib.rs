@@ -331,31 +331,70 @@ impl<T, E, I: Iterator<Item = Result<T, E>>> CollectResult<T, E> for I {
 mod tests {
     use super::*;
 
+    /// Creates a dispatching test.
+    ///
+    /// This allows to generate tests for the `implement_dispatch` macro. These
+    /// tests run on *n*-variants enums, with concrete type and no lifetime
+    /// parameter. They are here to check that macro expansion are correct in
+    /// the simplest case.
+    ///
+    /// This macro is used internally to write tests. `edisp` users should not
+    /// use it in their code.
+    ///
+    /// The syntax of this macro proceeds as follow:
+    ///   - the name of the generated test,
+    ///   - a list of values, separated by comas, surrounded by square braces,
+    ///   designating the content of an iterator,
+    /// Then, for each variant used:
+    ///   - the name of the variant,
+    ///   - the type it contains, surrounded by parenthesis,
+    ///   - the name of its container (`c1`, `c2`, `c3`...),
+    ///   - the `Container` type which will be used to collect values (if
+    ///   you're unsure, simply use `Vec<_>`),
+    ///   - the expected content of the container.
     macro_rules! implement_and_test_dispatching {
         (
             $test_name:ident,
+            // The values which will be yielded by the iterator
             [ $( $input_value:expr ),* $( , )? ],
-            $( ($v_name:ident ($v_type:ty), $c_name:ident, $collect_type:ty, $c_content:tt $( , )? ) ),* $( , )? 
+            // Informations about each variant
+            $( (
+                // The name of the variant
+                $v_name:ident
+                // Its inner type
+                ($v_type:ty),
+                // The name of its container
+                $c_name:ident,
+                // The type of its container
+                $collect_type:ty,
+                // The expected content of the container
+                $c_content:tt $( , )?
+            ) ),* $( , )?
         ) => {
             #[test]
             fn $test_name() {
                 use crate::prelude::*;
 
+                // Enum declaration
                 enum Enum {
                     $( $v_name($v_type) ),*
                 }
 
+                // Allows caller not to specify the enum name for each variant
                 use Enum::*;
 
+                // Implements dispatch for the genrated enum
                 implement_dispatch!(
                     Enum,
                     $( $v_name($v_type) ),*
                 );
 
+                // Testing:
+                //   - Creation of the iterator
                 let iter = vec![ $( $input_value ),* ].into_iter();
-
+                //   - Dispatching
                 let ( $( $c_name ),* ): ( $( $collect_type ),* ) = Enum::dispatch(iter);
-
+                //   - Conformity check
                 $(
                     assert_eq!($c_name, $c_content);
                 )*
@@ -363,6 +402,7 @@ mod tests {
         };
     }
 
+    // Generates a test for a two-variants enum.
     implement_and_test_dispatching! {
         dispatch_enum2,
         [V1(42), V2("manatee")],
@@ -370,6 +410,7 @@ mod tests {
         (V2(&'static str), c2, Vec<_>, ["manatee"]),
     }
 
+    // Generates a test for a three-variants enum.
     implement_and_test_dispatching! {
         dispatch_enum3,
         [V1(42), V2("manatee"), V3('!')],
@@ -378,6 +419,7 @@ mod tests {
         (V3(char), c3, Vec<_>, ['!']),
     }
 
+    // Generates a test for a four-variants enum.
     implement_and_test_dispatching! {
         dispatch_enum4,
         [V1(42), V2("manatee"), V3('!'), V4(true)],
@@ -387,6 +429,7 @@ mod tests {
         (V4(bool), c4, Vec<_>, [true]),
     }
 
+    // Generates a test for a five-variants enum.
     implement_and_test_dispatching! {
         dispatch_enum5,
         [V1(42), V2("manatee"), V3('!'), V4(true), V5(1.618)],
@@ -397,6 +440,7 @@ mod tests {
         (V5(f64), c5, Vec<_>, [1.618]),
     }
 
+    // Generates a test for a six-variants enum.
     implement_and_test_dispatching! {
         dispatch_enum6,
         [V1(42), V2("manatee"), V3('!'), V4(true), V5(1.618), V6(-1)],
@@ -408,6 +452,7 @@ mod tests {
         (V6(isize), c6, Vec<_>, [-1]),
     }
 
+    // Generates a test for a seven-variants enum.
     implement_and_test_dispatching! {
         dispatch_enum7,
         [V1(42), V2("manatee"), V3('!'), V4(true), V5(1.618), V6(-1), V7(101)],
@@ -420,6 +465,7 @@ mod tests {
         (V7(u8), c7, Vec<_>, [101]),
     }
 
+    // Generates a test for a eight-variants enum.
     implement_and_test_dispatching! {
         dispatch_enum8,
         [V1(42), V2("manatee"), V3('!'), V4(true), V5(1.618), V6(-1), V7(101), V8('§')],
