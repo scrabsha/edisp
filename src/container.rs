@@ -40,17 +40,44 @@ impl<T> Container<T> for Vec<T> {
     }
 }
 
+impl<K: Eq + Hash, V> Container<(K, V)> for HashMap<K, V> {
+    fn create_new() -> Self {
+        HashMap::new()
+    }
+
+    fn add_element(&mut self, (key, value): (K, V)) {
+        self.insert(key, value);
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
 
+    #[test]
     fn container_for_vec() {
         let left: Vec<()> = Vec::create_new();
-        let right = Vec::new();
-        assert_eq!(left, right);
+        assert_eq!(left, Vec::new());
 
         let mut left = Vec::new();
         left.add_element(42);
         assert_eq!(left, vec![42]);
+    }
+
+    #[test]
+    fn container_for_hashmap() {
+        let left: HashMap<(), ()> = HashMap::create_new();
+        assert_eq!(left, HashMap::new());
+
+        let mut left = HashMap::new();
+        left.add_element(("horse", "manatee"));
+
+        let right = {
+            let mut tmp = HashMap::new();
+            tmp.insert("horse", "manatee");
+            tmp
+        };
+
+        assert_eq!(left, right);
     }
 }
