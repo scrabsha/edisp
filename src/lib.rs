@@ -11,9 +11,7 @@
 //! # Dispatching on `std` enums
 //!
 //! This crate provides dispatching for enums defined in `std`. Values can be
-//! collected in any type that implements both
-//! [`Default`](https://doc.rust-lang.org/std/default/trait.Default.html) and
-//! [`Extend`](https://doc.rust-lang.org/std/iter/trait.Extend.html) traits.
+//! collected in any type that implements both [`Default`] and [`Extend`] traits.
 //! This dispatching consists in a trait generated for each enum, which can be
 //! called on every `Iterator`, like so:
 //!
@@ -43,9 +41,8 @@
 //! rid of the procedural macro dependencies, `syn` and `quote`, and reduces
 //! compilation time.
 //!
-//! Values can then be collected in any type that implements both
-//! [`Default`](https://doc.rust-lang.org/std/default/trait.Default.html) and
-//! [`Extend`](https://doc.rust-lang.org/std/iter/trait.Extend.html) traits.
+//! Values can then be collected in any type that implements both [`Default`]
+//! and [`Extend`] traits.
 //!
 //! ## Using `derive` macro
 //!
@@ -140,11 +137,15 @@
 //!     vec!["horse", "manatee"],
 //! );
 //! ```
+//!
+//! [`Default`]: https://doc.rust-lang.org/std/default/trait.Default.html
+//! [`Extend`]: https://doc.rust-lang.org/std/iter/trait.Extend.html
 
 #![forbid(missing_docs)]
 
 pub mod dispatchers;
 pub mod prelude;
+pub mod std_enums;
 
 /// Implements a given dispatcher trait for a given enum.
 ///
@@ -349,23 +350,6 @@ macro_rules! implement_dispatch {
             ($variant8_name, $variant8_it, container_8, H),
         );
     };
-}
-
-implement_dispatch!(Result<T, E>, Ok(T), Err(E));
-
-/// Allows to collect values from an iterator by dispatching `Ok` variants
-/// and `Err` variants to two different containers.
-pub trait CollectResult<A, B> {
-    /// Collects values and dispatch them.
-    fn dispatch_result<C: Default + Extend<A>, D: Default + Extend<B>>(self) -> (C, D);
-}
-
-impl<T, E, I: Iterator<Item = Result<T, E>>> CollectResult<T, E> for I {
-    fn dispatch_result<C: Default + Extend<T>, D: Default + Extend<E>>(self) -> (C, D) {
-        use crate::prelude::*;
-
-        Result::dispatch(self)
-    }
 }
 
 #[cfg(test)]

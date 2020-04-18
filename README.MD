@@ -13,9 +13,7 @@ implemented prior first beta release.
 ## Dispatching on `std` enums
 
 This crate provides dispatching for enums defined in `std`. Values can be
-collected in any type that implements both
-[`Default`](https://doc.rust-lang.org/std/default/trait.Default.html) and
-[`Extend`](https://doc.rust-lang.org/std/iter/trait.Extend.html) traits.
+collected in any type that implements both [`Default`] and [`Extend`] traits.
 This dispatching consists in a trait generated for each enum, which can be
 called on every `Iterator`, like so:
 
@@ -42,12 +40,11 @@ assert_eq!(some_errors, vec!["User not found", "System error"]);
 Dispatching code is generated with either `derive` macro or with declarative
 macro. The first method allows to quickly generate boilerplate without
 needing to write the enum name and variants twice. The second allows to get
-rid of the procedural macro dependencies, `syn` and `quote`, and reduce
+rid of the procedural macro dependencies, `syn` and `quote`, and reduces
 compilation time.
 
-Values can then be collected in any type that implements both
-[`Default`](https://doc.rust-lang.org/std/default/trait.Default.html) and
-[`Extend`](https://doc.rust-lang.org/std/iter/trait.Extend.html) traits.
+Values can then be collected in any type that implements both [`Default`]
+and [`Extend`] traits.
 
 ### Using `derive` macro
 
@@ -142,5 +139,8 @@ assert_eq!(
     vec!["horse", "manatee"],
 );
 ```
+
+[`Default`]: https://doc.rust-lang.org/std/default/trait.Default.html
+[`Extend`]: https://doc.rust-lang.org/std/iter/trait.Extend.html
 
 License: MIT OR Apache-2.0
