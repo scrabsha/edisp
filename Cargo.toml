@@ -8,5 +8,6 @@ keywords = ["dispatch", "enum"]
 categories = ["rust-patterns"]
 repository = "https://github.com/scileo/edisp"
 license = "MIT OR Apache-2.0"
+readme = "README.MD"
 
 [dependencies]
