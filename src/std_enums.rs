@@ -22,3 +22,23 @@ impl<T, E, I: Iterator<Item = Result<T, E>>> CollectResult<T, E> for I {
         Result::dispatch(self)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn collect_result_impl() {
+        let i = vec![Ok(42), Err("foo"), Ok(101), Err("bar")].into_iter();
+        let (some_oks, some_errs): (Vec<_>, Vec<_>) = i.dispatch_result();
+
+        assert_eq!(
+            some_oks,
+            vec![42, 101],
+        );
+        assert_eq!(
+            some_errs,
+            vec!["foo", "bar"],
+        );
+    }
+}
