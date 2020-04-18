@@ -156,7 +156,6 @@ pub mod std_enums;
 macro_rules! implement_dispatcher_trait {
     (
         $enum_name:ident ( $( $ty_arg:tt ),* $( , )? ),
-        $trait_name:ident,
         $( (
             $variant_name:ident,
             $inner_type:ty,
@@ -164,17 +163,24 @@ macro_rules! implement_dispatcher_trait {
             $container_letter:ident
         ) ),+ $( , )?
     ) => {
-        impl< $( $ty_arg, )* > $crate::dispatchers::$trait_name< $( $inner_type, )+ > for $enum_name< $( $ty_arg, )* > {
-            fn dispatch< $( $container_letter, )* I>(iter:I) -> ( $( $container_letter, )+ )
-                where $( $container_letter: Default + Extend<$inner_type>, )+
-                      I: Iterator<Item = $enum_name< $( $ty_arg, )* >>
+        impl<
+            $( $ty_arg, )*
+            $( $container_letter, )+
+        > $crate::dispatchers::Dispatch<( $( $container_letter, )+ )> for $enum_name< $( $ty_arg, )* >
+        where
+        $(
+            $container_letter: Default + Extend<$inner_type>,
+        )+
+        {
+            fn dispatch<I>(iter: I) -> ( $( $container_letter, )+ )
+            where
+                I: Iterator<Item = $enum_name< $( $ty_arg, )* >>,
             {
                 $(
                     let mut $container_name = $container_letter::default();
                 )+
 
                 use $enum_name::*;
-
                 for element in iter {
                     match element {
                         $(
@@ -231,7 +237,6 @@ macro_rules! implement_dispatch {
     ) => {
         implement_dispatcher_trait!(
             $enum_name( $( $( $ty_arg, )+ )? ),
-            CollectDispatch2,
             ($variant1_name, $variant1_it, container_a, A),
             ($variant2_name, $variant2_it, container_b, B),
         );
@@ -244,7 +249,6 @@ macro_rules! implement_dispatch {
     ) => {
         implement_dispatcher_trait!(
             $enum_name( $( $( $ty_arg, )+ )? ),
-            CollectDispatch3,
             ($variant1_name, $variant1_it, container_1, A),
             ($variant2_name, $variant2_it, container_2, B),
             ($variant3_name, $variant3_it, container_3, C),
@@ -259,7 +263,6 @@ macro_rules! implement_dispatch {
     ) => {
         implement_dispatcher_trait!(
             $enum_name( $( $( $ty_arg, )+ )? ),
-            CollectDispatch4,
             ($variant1_name, $variant1_it, container_1, A),
             ($variant2_name, $variant2_it, container_2, B),
             ($variant3_name, $variant3_it, container_3, C),
@@ -276,7 +279,6 @@ macro_rules! implement_dispatch {
     ) => {
         implement_dispatcher_trait!(
             $enum_name( $( $( $ty_arg, )+ )? ),
-            CollectDispatch5,
             ($variant1_name, $variant1_it, container_1, A),
             ($variant2_name, $variant2_it, container_2, B),
             ($variant3_name, $variant3_it, container_3, C),
@@ -295,7 +297,6 @@ macro_rules! implement_dispatch {
     ) => {
         implement_dispatcher_trait!(
             $enum_name( $( $( $ty_arg, )+ )? ),
-            CollectDispatch6,
             ($variant1_name, $variant1_it, container_1, A),
             ($variant2_name, $variant2_it, container_2, B),
             ($variant3_name, $variant3_it, container_3, C),
@@ -316,7 +317,6 @@ macro_rules! implement_dispatch {
     ) => {
         implement_dispatcher_trait!(
             $enum_name( $( $( $ty_arg, )+ )? ),
-            CollectDispatch7,
             ($variant1_name, $variant1_it, container_1, A),
             ($variant2_name, $variant2_it, container_2, B),
             ($variant3_name, $variant3_it, container_3, C),
@@ -339,7 +339,6 @@ macro_rules! implement_dispatch {
     ) => {
         implement_dispatcher_trait!(
             $enum_name( $( $( $ty_arg, )+ )? ),
-            CollectDispatch8,
             ($variant1_name, $variant1_it, container_1, A),
             ($variant2_name, $variant2_it, container_2, B),
             ($variant3_name, $variant3_it, container_3, C),

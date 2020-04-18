@@ -5,9 +5,5 @@
 //! access for everything needed.
 
 pub use crate::{
-    dispatchers::*,
-    implement_dispatch,
-    implement_dispatcher_trait,
-    std_enums::*,
+    dispatchers::Dispatch, implement_dispatch, implement_dispatcher_trait, std_enums::*,
 };
-
