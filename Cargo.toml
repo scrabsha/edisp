@@ -1,13 +1,12 @@
 [package]
 name = "edisp"
-version = "0.1.0"
-authors = ["Leo Pourcelot <leo.pourcelot@protonmail.com>"]
+version = "0.0.1"
+authors = ["Sasha"]
 edition = "2018"
 description = "Dispatch-on-collect for Rust enums"
+keywords = ["dispatch", "enum"]
+categories = ["rust-patterns"]
 repository = "https://github.com/scileo/edisp"
 license = "MIT OR Apache-2.0"
-
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
