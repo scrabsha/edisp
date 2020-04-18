@@ -1,7 +1,5 @@
 # edisp
 
-## Edisp
-
 Dispatch-on-collect for Rust enums. This crate allows to dispatch enums
 yielded from an iterator, depending on their variants, with no runtime
 costs.
