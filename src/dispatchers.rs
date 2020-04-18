@@ -49,7 +49,7 @@ macro_rules! create_n_collect_dispatcher {
         /// name (ScreamingCamelCase is your friend).
         pub trait $name<$( $high_letter, )+> where Self: Sized {
             /// Performs dispatching.
-            fn dispatch<$( $low_letter: $crate::container::Container<$high_letter>, )+ I: Iterator<Item = Self>>(iter: I) -> ( $( $low_letter, )+ );
+            fn dispatch<$( $low_letter: std::default::Default + std::iter::Extend<$high_letter>, )+ I: Iterator<Item = Self>>(iter: I) -> ( $( $low_letter, )+ );
         }
     }
 }

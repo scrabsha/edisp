@@ -143,11 +143,8 @@
 
 #![forbid(missing_docs)]
 
-pub mod container;
 pub mod dispatchers;
 pub mod prelude;
-
-use container::Container;
 
 /// Implements a given dispatcher trait for a given enum.
 ///
@@ -168,11 +165,11 @@ macro_rules! implement_dispatcher_trait {
     ) => {
         impl< $( $ty_arg, )* > $crate::dispatchers::$trait_name< $( $inner_type, )+ > for $enum_name< $( $ty_arg, )* > {
             fn dispatch< $( $container_letter, )* I>(iter:I) -> ( $( $container_letter, )+ )
-                where $( $container_letter: $crate::container::Container<$inner_type>, )+
+                where $( $container_letter: Default + Extend<$inner_type>, )+
                       I: Iterator<Item = $enum_name< $( $ty_arg, )* >>
             {
                 $(
-                    let mut $container_name = $container_letter::create_new();
+                    let mut $container_name = $container_letter::default();
                 )+
 
                 use $enum_name::*;
@@ -180,7 +177,7 @@ macro_rules! implement_dispatcher_trait {
                 for element in iter {
                     match element {
                         $(
-                            $variant_name(value) => $container_name.add_element(value),
+                            $variant_name(value) => $container_name.extend(Some(value)),
                         )+
                     }
                 }
@@ -360,11 +357,11 @@ implement_dispatch!(Result<T, E>, Ok(T), Err(E));
 /// and `Err` variants to two different containers.
 pub trait CollectResult<A, B> {
     /// Collects values and dispatch them.
-    fn dispatch_result<C: Container<A>, D: Container<B>>(self) -> (C, D);
+    fn dispatch_result<C: Default + Extend<A>, D: Default + Extend<B>>(self) -> (C, D);
 }
 
 impl<T, E, I: Iterator<Item = Result<T, E>>> CollectResult<T, E> for I {
-    fn dispatch_result<C: Container<T>, D: Container<E>>(self) -> (C, D) {
+    fn dispatch_result<C: Default + Extend<T>, D: Default + Extend<E>>(self) -> (C, D) {
         use crate::prelude::*;
 
         Result::dispatch(self)
