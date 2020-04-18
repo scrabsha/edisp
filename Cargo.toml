@@ -1,6 +1,6 @@
 [package]
 name = "edisp"
-version = "0.0.1"
+version = "0.0.2"
 authors = ["Sasha"]
 edition = "2018"
 description = "Dispatch-on-collect for Rust enums"
