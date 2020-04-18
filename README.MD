@@ -95,9 +95,6 @@ The custom derive feature can be disabled by disabling `derive` feature.
 
 ### Using declarative macro
 
-**Note:** `CollectDispatch2`, `CollectDispatch3`, and so on still have to be
-merged toghether.
-
 This crate provides a macro entitled `implement_dispatch`. It allows to
 generate traits required for dispatching. Everything wraps up like this:
 
