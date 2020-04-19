@@ -1,0 +1,13 @@
+[package]
+name = "edisp-core"
+version = "0.1.0"
+authors = ["Sasha"]
+edition = "2018"
+description = "Internals for edisp"
+keywords = ["dispatch", "enum"]
+categories = ["rust-patterns"]
+repository = "https://github.com/scileo/edisp"
+documentation = "https://docs.rs/edisp-core"
+license = "MIT OR Apache-2.0"
+
+[dependencies]

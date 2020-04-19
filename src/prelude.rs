@@ -4,6 +4,4 @@
 //! to import everything just by writing `use edisp::prelude::*;`, and get
 //! access for everything needed.
 
-pub use crate::{
-    dispatchers::Dispatch, implement_dispatch, implement_dispatcher_trait, std_enums::*,
-};
+pub use edisp_core::prelude::*;

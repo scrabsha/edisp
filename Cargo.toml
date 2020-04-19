@@ -7,7 +7,10 @@ description = "Dispatch-on-collect for Rust enums"
 keywords = ["dispatch", "enum"]
 categories = ["rust-patterns"]
 repository = "https://github.com/scileo/edisp"
+documentation = "https://docs.rs/edisp"
 license = "MIT OR Apache-2.0"
 readme = "README.MD"
 
 [dependencies]
+edisp-core = { path = "edisp-core" }
+edisp-derive = { path = "edisp-derive" }

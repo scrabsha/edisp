@@ -1,0 +1,21 @@
+[package]
+name = "edisp-derive"
+version = "0.1.0"
+authors = ["Sasha"]
+edition = "2018"
+description = "Derive macro for edisp"
+keywords = ["dispatch", "enum"]
+categories = ["rust-patterns"]
+repository = "https://github.com/scileo/edisp"
+documentation = "https://doc.rs/edisp-derive"
+license = "MIT OR Apache-2.0"
+
+[dependencies]
+syn = "1.0"
+quote = "1.0"
+proc-macro2 = "1.0"
+edisp-core = { path = "../edisp-core" }
+
+[lib]
+proc-macro = true
+
