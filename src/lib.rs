@@ -99,7 +99,7 @@
 //!     Custom(T),
 //! }
 //!
-//! // Implements the required trait (in this case, CollectDispatch2)
+//! // Implements the required trait
 //! implement_dispatch!(
 //!     MyOwnEnum<T>,
 //!     Character(char),
