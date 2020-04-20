@@ -13,4 +13,7 @@ readme = "README.MD"
 
 [dependencies]
 edisp-core = { path = "edisp-core" }
-edisp-derive = { path = "edisp-derive" }
+edisp-derive = { path = "edisp-derive", optional = true }
+
+[features]
+default = ["edisp-derive"]

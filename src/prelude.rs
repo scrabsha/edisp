@@ -5,4 +5,6 @@
 //! access for everything needed.
 
 pub use edisp_core::prelude::*;
+
+#[cfg(default_features)]
 pub use edisp_derive::Dispatch;
