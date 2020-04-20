@@ -142,3 +142,50 @@
 
 pub mod prelude;
 
+#[cfg(test)]
+mod tests {
+    use crate::prelude::*;
+
+    #[test]
+    fn simple_derive() {
+        #[allow(dead_code)]
+        #[derive(Dispatch)]
+        enum E {
+            Var1(usize),
+            Var2(&'static str),
+            Var3(()),
+        }
+    }
+
+    #[test]
+    fn derive_with_empty_variant() {
+        #[allow(dead_code)]
+        #[derive(Dispatch)]
+        enum E {
+            Nothing,
+            Var1(usize),
+        }
+    }
+
+    #[test]
+    fn derive_with_discriminant_and_attributes() {
+        #[allow(dead_code)]
+        #[derive(Dispatch)]
+        enum E {
+            A = 0,
+            /// Some documentation comments
+            B,
+        }
+    }
+
+    #[test]
+    fn derive_with_generics() {
+        #[allow(dead_code)]
+        #[derive(Dispatch)]
+        enum E<'a, T> {
+            A(&'a usize),
+            B(T),
+            C(T),
+        }
+    }
+}

@@ -5,3 +5,4 @@
 //! access for everything needed.
 
 pub use edisp_core::prelude::*;
+pub use edisp_derive::Dispatch;

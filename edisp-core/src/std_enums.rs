@@ -32,13 +32,7 @@ mod tests {
         let i = vec![Ok(42), Err("foo"), Ok(101), Err("bar")].into_iter();
         let (some_oks, some_errs): (Vec<_>, Vec<_>) = i.dispatch_result();
 
-        assert_eq!(
-            some_oks,
-            vec![42, 101],
-        );
-        assert_eq!(
-            some_errs,
-            vec!["foo", "bar"],
-        );
+        assert_eq!(some_oks, vec![42, 101],);
+        assert_eq!(some_errs, vec!["foo", "bar"],);
     }
 }
