@@ -13,9 +13,9 @@ implemented prior first beta release.
 ## Dispatching on `std` enums
 
 This crate provides dispatching for enums defined in `std`. Values can be
-collected in any type that implements both [`Default`] and [`Extend`] traits.
-This dispatching consists in a trait generated for each enum, which can be
-called on every `Iterator`, like so:
+collected in any type that implements both [`Default`] and [`Extend`]
+traits. This dispatching consists in a trait generated for each enum,
+which can be called on every `Iterator`, like so:
 
 ```rust
 use edisp::prelude::*;
@@ -47,9 +47,6 @@ Values can then be collected in any type that implements both [`Default`]
 and [`Extend`] traits.
 
 ### Using `derive` macro
-
-**Note:** This feature is not currently avalaible. It will be implemented
-before first beta release.
 
 This crate provides a custom `derive` macro allowing which automatically
 implements traits required for dispatching, as shown in the following code
@@ -88,10 +85,8 @@ assert_eq!(
 );
 ```
 
-**Note:** This feature is not currently implemented, and as such can't be
-turned off.
-
-The custom derive feature can be disabled by disabling `derive` feature.
+The custom derive feature can be disabled by disabling `default-features`
+in the cargo manifest.
 
 ### Using declarative macro
 

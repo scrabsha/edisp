@@ -46,9 +46,6 @@
 //!
 //! ## Using `derive` macro
 //!
-//! **Note:** This feature is not currently avalaible. It will be implemented
-//! before first beta release.
-//!
 //! This crate provides a custom `derive` macro allowing which automatically
 //! implements traits required for dispatching, as shown in the following code
 //! snippet:
@@ -86,10 +83,8 @@
 //! );
 //! ```
 //!
-//! **Note:** This feature is not currently implemented, and as such can't be
-//! turned off.
-//!
-//! The custom derive feature can be disabled by disabling `derive` feature.
+//! The custom derive feature can be disabled by disabling `default-features`
+//! in the cargo manifest.
 //!
 //! ## Using declarative macro
 //!
