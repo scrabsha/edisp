@@ -6,5 +6,5 @@
 
 pub use edisp_core::prelude::*;
 
-#[cfg(default_features)]
+#[cfg(feature = "default")]
 pub use edisp_derive::Dispatch;
