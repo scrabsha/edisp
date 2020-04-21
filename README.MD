@@ -31,8 +31,8 @@ let iter = vec![
 // Call the correct method, and that's all!
 let (some_successes, some_errors): (Vec<_>, Vec<_>) = iter.dispatch_result();
 
-assert_eq!(some_successes, vec![42, 0]);
-assert_eq!(some_errors, vec!["User not found", "System error"]);
+assert_eq!(some_successes, [42, 0]);
+assert_eq!(some_errors, ["User not found", "System error"]);
 ```
 
 ## Dispatching on other crate's enums
@@ -76,12 +76,12 @@ let (some_characters, some_strs): (Vec<_>, Vec<_>) = MyOwnEnum::dispatch(iter);
 // And it does what you expect!
 assert_eq!(
     some_characters,
-    vec!['λ', '!'],
+    ['λ', '!'],
 );
 
 assert_eq!(
     some_strs,
-    vec!["horse", "manatee"],
+    ["horse", "manatee"],
 );
 ```
 
@@ -123,12 +123,12 @@ let (some_characters, some_strs): (Vec<_>, Vec<_>) = MyOwnEnum::dispatch(iter);
 // And it does what you expect!
 assert_eq!(
     some_characters,
-    vec!['λ', '!'],
+    ['λ', '!'],
 );
 
 assert_eq!(
     some_strs,
-    vec!["horse", "manatee"],
+    ["horse", "manatee"],
 );
 ```
 
