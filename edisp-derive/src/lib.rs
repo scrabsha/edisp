@@ -3,7 +3,8 @@
 extern crate proc_macro;
 
 use syn::{
-    Data, DataEnum, DeriveInput, Error, Fields, Generics, Ident, Result, Variant as SVariant,
+    Data, DataEnum, DeriveInput, Error, Fields, GenericParam, Generics, Ident, Result,
+    Variant as SVariant,
 };
 
 use quote::{format_ident, quote};
@@ -32,53 +33,32 @@ fn impl_dispatch_macro(ast: DeriveInput) -> Result<TokenStream2> {
     let e = Enum::from_syn(ast)?;
     let name = &e.name;
 
-    let struct_generics = e.generics.params.iter();
+    let full_type = e.full_type();
 
-    let full_type = quote! {
-        #name< #( #struct_generics, )*>
-    };
-    let full_type2 = full_type.clone();
+    let ctn = e.container_type_name_iter();
+    let where_clause_content_iter = e.container_constraints_iter();
 
-    let struct_generics = e.generics.params.iter();
-    let container_type_letters = e.variants.iter().map(|v| &v.container_type_name);
-    let container_type_letters2 = container_type_letters.clone();
-    let container_type_letters3 = container_type_letters.clone();
-    let container_type_letters4 = container_type_letters.clone();
-
-    let trait_generics = quote! {
-        #( #struct_generics, )* #( #container_type_letters, )*
-    };
-
-    let inner_types = e.variants.iter().map(Variant::container_inner_type);
-
-    let where_clause_content = quote! {
-        #( #container_type_letters2: Default + Extend< #inner_types >, )*
-    };
-
-    let return_type = quote! {
-        ( #( #container_type_letters3, )* )
-    };
+    let return_type = e.return_type();
     let return_type2 = return_type.clone();
 
     let container_names = e.variants.iter().map(|v| &v.container_name);
-    let container_names2 = container_names.clone();
     let containers_initialization = quote! {
-        #( let mut #container_names = #container_type_letters4::default(); )*
+        #( let mut #container_names = #ctn::default(); )*
     };
 
     let match_arms = e.variants.iter().map(Variant::match_arm);
 
-    let return_expression = quote! {
-        ( #( #container_names2, )* )
-    };
+    let return_expression = e.return_expression();
+
+    let trait_generics = e.required_generics();
 
     Ok(quote! {
         impl< #trait_generics > Dispatch< #return_type > for #full_type
-        where #where_clause_content
+        where #( #where_clause_content_iter )*
         {
             fn dispatch<I>(iter: I) -> #return_type2
             where
-                I: Iterator<Item = #full_type2 >
+                I: Iterator<Item = #full_type >
             {
                 #containers_initialization
 
@@ -151,6 +131,80 @@ impl Enum {
             generics,
             variants,
         })
+    }
+
+    /// Returns the full type of the enum.
+    ///
+    /// Full type is roughly the enum's name and its generics.
+    fn full_type(&self) -> TokenStream2 {
+        let generics = self.generics_iter();
+        let name = &self.name;
+
+        quote! { #name < #( #generics, )* > }
+    }
+
+    /// Returns an iterator over the generics defined in the enum declaration.
+    fn generics_iter(&self) -> impl Iterator<Item = &GenericParam> {
+        self.generics.params.iter()
+    }
+
+    /// Returns an iterator over every container types the enum requires.
+    ///
+    /// For every enum variant corresponds a container type. In order to stay
+    /// general and not restrict the user, generic parameters are used.
+    fn container_type_name_iter(&self) -> impl Iterator<Item = &Ident> {
+        self.variants.iter().map(|v| &v.container_type_name)
+    }
+
+    /// Returns every generics which must be declared for the `Dispatch` trait.
+    fn required_generics(&self) -> TokenStream2 {
+        let generics = self.required_generics_iter();
+        quote! { #( #generics, )* }
+    }
+
+    /// Returns an iterator over every generics that have to be declared while
+    /// implementing `Dispatch`.
+    fn required_generics_iter(&self) -> impl Iterator<Item = TokenStream2> + '_ {
+        let enum_generics = self.generics_iter().map(|g| quote! { #g });
+        let dispatch_generics = self.container_type_name_iter().map(|g| quote! { #g });
+        enum_generics.chain(dispatch_generics)
+    }
+
+    /// Returns the expected return type for the `Dispatch` trait.
+    ///
+    /// The return type is a tuple of n elements (n being the amount of
+    /// enum variants). Each element has a name as defined in
+    /// `Enum::container_type_name_iter`.
+    fn return_type(&self) -> TokenStream2 {
+        let dispatch_generics = self.container_type_name_iter();
+        quote! { ( #( #dispatch_generics, )* ) }
+    }
+
+    /// Returns an iterator over every container type constraint.
+    fn container_constraints_iter(&self) -> impl Iterator<Item = TokenStream2> + '_ {
+        self.container_type_name_iter()
+            .zip(self.container_inner_type_iter())
+            .map(|(container_name, container_inner_type)| {
+                quote! { #container_name : Default + Extend< #container_inner_type >, }
+            })
+    }
+
+    /// Returns an iterator over the type each variant holds.
+    fn container_inner_type_iter(&self) -> impl Iterator<Item = TokenStream2> + '_ {
+        self.variants.iter().map(Variant::container_inner_type)
+    }
+
+    /// Returns the return expression expected in the `Dispatch`
+    /// implementation.
+    fn return_expression(&self) -> TokenStream2 {
+        let names = self.container_name_iter();
+        quote! { ( #( #names , )* ) }
+    }
+
+    /// Returns an iterator over every container name required to implement
+    /// `Dispatch`.
+    fn container_name_iter(&self) -> impl Iterator<Item = &Ident> {
+        self.variants.iter().map(|v| &v.container_name)
     }
 }
 
