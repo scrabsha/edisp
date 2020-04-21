@@ -3,6 +3,25 @@
 //!
 //! Every `std` enum should additionaly have a custom trait entitled `CollectE`
 //! (`E` being the name of the enum), which can be used as an iterator adapter.
+//!
+//! The following list contains every enum available in the standard library
+//! and whether if the `Dispatch` trait has been implemented for it:
+//!   - `Cow` (done),
+//!   - `Entry` (both in `hash_map` and in `btree_map`) (todo),
+//!   - `VarError` (todo),
+//!   - `SeekFrom` (todo),
+//!   - `IpAddr` (todo),
+//!   - `SocketAddr` (todo),
+//!   - `Bound` (todo),
+//!   - `Option` (todo),
+//!   - `Component` (todo),
+//!   - `Prefix` (todo),
+//!   - `Result` (done),
+//!   - `TryLockError` (todo),
+//!   - `Poll` (todo),
+//!
+//! Some enums may not benefit from the implementation of `Dispatch` as such,
+//! they have been removed from this list.
 
 use std::borrow::Cow;
 
