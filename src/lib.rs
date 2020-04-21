@@ -143,44 +143,66 @@ mod tests {
 
     #[test]
     fn simple_derive() {
-        #[allow(dead_code)]
         #[derive(Dispatch)]
         enum E {
             Var1(usize),
             Var2(&'static str),
             Var3(()),
         }
+
+        use E::*;
+        let i = vec![Var1(42), Var2("manatee"), Var3(())].into_iter();
+
+        let (some_var1, some_var2, some_var3): (Vec<_>, Vec<_>, Vec<_>) = E::dispatch(i);
+        assert_eq!(some_var1, [42]);
+        assert_eq!(some_var2, ["manatee"]);
+        assert_eq!(some_var3, [()]);
     }
 
     #[test]
     fn derive_with_empty_variant() {
-        #[allow(dead_code)]
         #[derive(Dispatch)]
         enum E {
             Nothing,
             Var1(usize),
         }
+
+        use E::*;
+        let i = vec![Nothing, Nothing, Var1(101)].into_iter();
+        let (some_nothing, some_var1): (Vec<_>, Vec<_>) = E::dispatch(i);
+        assert_eq!(some_nothing, [(), ()]);
+        assert_eq!(some_var1, [101]);
     }
 
     #[test]
     fn derive_with_discriminant_and_attributes() {
-        #[allow(dead_code)]
         #[derive(Dispatch)]
         enum E {
             A = 0,
             /// Some documentation comments
             B,
         }
+
+        use E::*;
+        let i = vec![A, A, B, A].into_iter();
+        let (some_a, some_b): (Vec<_>, Vec<_>) = E::dispatch(i);
+        assert_eq!(some_a, [(), (), ()]);
+        assert_eq!(some_b, [()]);
+
     }
 
     #[test]
     fn derive_with_generics() {
-        #[allow(dead_code)]
         #[derive(Dispatch)]
         enum E<'a, T> {
             A(&'a usize),
             B(T),
-            C(T),
         }
+
+        use E::*;
+        let i = vec![A(&42), B('c'), A(&101)].into_iter();
+        let (some_a, some_b): (Vec<&_>, Vec<_>) = E::dispatch(i);
+        assert_eq!(some_a, [&42, &101]);
+        assert_eq!(some_b, ['c']);
     }
 }
