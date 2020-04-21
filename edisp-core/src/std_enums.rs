@@ -4,6 +4,8 @@
 //! Every `std` enum should additionaly have a custom trait entitled `CollectE`
 //! (`E` being the name of the enum), which can be used as an iterator adapter.
 
+use std::borrow::Cow;
+
 use crate::prelude::*;
 
 implement_dispatch!(Result<T, E>, Ok(T), Err(E));
@@ -23,6 +25,56 @@ impl<T, E, I: Iterator<Item = Result<T, E>>> CollectResult<T, E> for I {
     }
 }
 
+impl<'a, B: 'a + ToOwned + ?Sized, C, D> Dispatch<(C, D)> for Cow<'a, B>
+where
+    Self: Sized,
+    C: Default + Extend<&'a B>,
+    D: Default + Extend<<B as ToOwned>::Owned>,
+{
+    fn dispatch<I: Iterator<Item = Self>>(iter: I) -> (C, D) {
+        let mut c = C::default();
+        let mut d = D::default();
+
+        for element in iter {
+            match element {
+                Cow::Borrowed(v) => c.extend(Some(v)),
+                Cow::Owned(v) => d.extend(Some(v)),
+            }
+        }
+
+        (c, d)
+    }
+}
+
+/// Allows to collect owned values and borrowed values separately.
+///
+/// This may be usefull. The first value inside the tuple contains the borrowed
+/// data while the second one contains the owned data.
+pub trait CollectCow<'a, B>
+where
+    B: 'a + ToOwned + ?Sized,
+{
+    /// Collects values and dispatch them.
+    fn dispatch_cow<C, D>(self) -> (C, D)
+    where
+        C: Default + Extend<&'a B>,
+        D: Default + Extend<<B as ToOwned>::Owned>;
+}
+
+impl<'a, B, I> CollectCow<'a, B> for I
+where
+    B: 'a + ToOwned + ?Sized,
+    I: Iterator<Item = Cow<'a, B>>,
+{
+    fn dispatch_cow<C, D>(self) -> (C, D)
+    where
+        C: Default + Extend<&'a B>,
+        D: Default + Extend<<B as ToOwned>::Owned>,
+    {
+        Cow::dispatch(self)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -34,5 +86,14 @@ mod tests {
 
         assert_eq!(some_oks, vec![42, 101],);
         assert_eq!(some_errs, vec!["foo", "bar"],);
+    }
+
+    #[test]
+    fn collect_cow_impl() {
+        let i = vec![Cow::Owned(42), Cow::Borrowed(&-1), Cow::Owned(101)].into_iter();
+        let (some_borrowed, some_owned): (Vec<&i8>, Vec<_>) = i.dispatch_cow();
+
+        assert_eq!(some_borrowed, vec![&-1]);
+        assert_eq!(some_owned, vec![42, 101]);
     }
 }
